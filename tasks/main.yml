@@ -1,0 +1,84 @@
+---
+- name: Install Docker dependencies
+  ansible.builtin.apt:
+    name: "{{ docker_dependencies }}"
+    update_cache: true
+
+- name: Configure Docker APT repository
+  ansible.builtin.deb822_repository:
+    architectures: "{{ docker_architecture_map[ansible_architecture] }}"
+    components: stable
+    name: docker
+    signed_by: "{{ docker_apt_signed_by }}"
+    suites: "{{ ansible_distribution_release }}"
+    uris: "{{ docker_apt_uris }}"
+
+- name: Create Docker configuration directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  loop:
+    - "/etc/docker"
+    - "/etc/systemd/system/docker.service.d"
+
+- name: Configure Docker daemon options (json)
+  ansible.builtin.template:
+    dest: "/etc/docker/daemon.json"
+    group: "root"
+    mode: "0644"
+    owner: "root"
+    src: "etc/docker/daemon.json.j2"
+  notify: Restart Docker
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: "{{ docker_package_state }}"
+    update_cache: true
+
+- name: Add user(s) to "docker" group
+  ansible.builtin.user:
+    append: true
+    groups: "docker"
+    name: "{{ item }}"
+  loop: "{{ docker_users }}"
+
+- name: Configure containerd options
+  ansible.builtin.template:
+    src: "etc/containerd/config.toml.j2"
+    dest: "/etc/containerd/config.toml"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Restart Docker
+
+- name: Configure Docker daemon flags
+  ansible.builtin.template:
+    src: "etc/systemd/system/docker.service.d/options.conf.j2"
+    dest: "/etc/systemd/system/docker.service.d/options.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify:
+    - Reload systemd daemon
+    - Restart Docker
+
+- name: Ensure Docker cron jobs exist
+  ansible.builtin.cron:
+    cron_file: "{{ item.cron_file }}"
+    day: "{{ item.schedule[2] }}"
+    hour: "{{ item.schedule[1] }}"
+    job: "{{ item.job }}"
+    minute: "{{ item.schedule[0] }}"
+    month: "{{ item.schedule[3] }}"
+    name: "{{ item.name }}"
+    user: "{{ item.user | d('root') }}"
+    weekday: "{{ item.schedule[4] }}"
+  loop: "{{ docker_cron_jobs }}"
+  when:
+    - item.state | d("present") != "absent"
+    - item.name | d() and item.job | d()
+    - item.schedule | d() and item.cron_file | d()

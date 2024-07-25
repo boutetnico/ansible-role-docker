@@ -1,0 +1,16 @@
+---
+dependency:
+  name: galaxy
+  enabled: false
+
+driver:
+  name: docker
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ../shared/converge.yml
+
+verifier:
+  name: testinfra
+  directory: ../shared/tests/

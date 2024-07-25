@@ -1,0 +1,31 @@
+---
+docker_dependencies:
+  - apt-transport-https
+  - ca-certificates
+  - cron
+  - gnupg2
+  - libffi-dev
+  - python3-debian
+  - software-properties-common
+
+docker_packages:
+  - docker-ce
+  - docker-compose-plugin
+  - python3-docker
+
+docker_package_state: present
+
+docker_users:
+  - root
+
+docker_daemon_flags:
+  - "-H unix://"
+
+docker_daemon_json: {}
+
+docker_cron_jobs:
+  - name: "Docker disk clean up"
+    job: "docker system prune -af > /dev/null 2>&1"
+    schedule: ["0", "0", "*", "*", "0"]
+    cron_file: "docker-disk-clean-up"
+    user: "{{ (docker_users | first) | d('root') }}"

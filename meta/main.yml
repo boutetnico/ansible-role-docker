@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  role_name: docker
+  namespace: boutetnico
+  author: Nicolas Boutet
+  description: Install Docker.
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye
+  galaxy_tags:
+    - compose
+    - container
+    - docker
+    - moby
+dependencies: []

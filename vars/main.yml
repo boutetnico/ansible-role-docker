@@ -1,0 +1,11 @@
+---
+docker_apt_signed_by: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+
+docker_apt_uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+
+docker_architecture_map:
+  "x86_64": "amd64"
+  "aarch64": "arm64"
+  "aarch": "arm64"
+  "armhf": "armhf"
+  "armv7l": "armhf"
