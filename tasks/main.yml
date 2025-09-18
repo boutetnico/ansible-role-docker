@@ -78,7 +78,4 @@
     user: "{{ item.user | d('root') }}"
     weekday: "{{ item.schedule[4] }}"
   loop: "{{ docker_cron_jobs }}"
-  when:
-    - item.state | d("present") != "absent"
-    - item.name | d() and item.job | d()
-    - item.schedule | d() and item.cron_file | d()
+  when: item.state | d("present") != "absent"
