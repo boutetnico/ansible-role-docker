@@ -10,6 +10,27 @@ on:
     - cron: "22 2 * * 2"
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install ansible-lint black
+
+      - name: Lint code
+        run: |
+          ansible-lint
+          black --check .
+        env:
+          PY_COLORS: "1"
+
   test:
     runs-on: ${{ matrix.os }}
 
@@ -32,11 +53,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Remove pre-installed ansible
-        run: sudo apt-get remove --purge -y ansible
-
       - name: Install dependencies
-        run: pip install ansible ansible-lint docker molecule molecule-plugins[docker] pytest-testinfra black
+        run: pip install ansible docker molecule molecule-plugins[docker] pytest-testinfra
 
       - name: Display versions
         run: |
@@ -44,13 +62,6 @@ jobs:
           pip --version
           ansible --version
           molecule --version
-
-      - name: Lint code
-        run: |
-          ansible-lint
-          black --check .
-        env:
-          PY_COLORS: "1"
 
       - name: Run Molecule
         run: molecule --base-config molecule/shared/base.yml test --scenario-name ${{ matrix.scenario }}
