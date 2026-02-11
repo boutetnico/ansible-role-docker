@@ -1,13 +1,11 @@
 ---
 docker_dependencies:
-  - apt-transport-https
   - ca-certificates
   - cron
   - gnupg2
   - libffi-dev
   - python3-debian
   - python3-docker
-  - software-properties-common
 
 docker_packages:
   - containerd.io

@@ -4,12 +4,10 @@ import pytest
 @pytest.mark.parametrize(
     "name",
     [
-        ("apt-transport-https"),
         ("ca-certificates"),
         ("cron"),
         ("gnupg2"),
         ("python3-docker"),
-        ("software-properties-common"),
     ],
 )
 def test_dependencies_are_installed(host, name):
