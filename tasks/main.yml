@@ -79,3 +79,11 @@
     weekday: "{{ item.schedule[4] }}"
   loop: "{{ docker_cron_jobs }}"
   when: item.state | d("present") != "absent"
+
+# Ensure Docker is (re)started with its final configuration before any
+# subsequent role creates containers. Without this, roles later in the same
+# play (or a flush_handlers triggered from another role) can bounce the
+# daemon after containers are already created — and if data-root changed,
+# those containers end up orphaned in the old data directory.
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
