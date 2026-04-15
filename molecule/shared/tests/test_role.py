@@ -86,6 +86,18 @@ def test_docker_config_files_exist(host, path, user, group, mode):
     assert config.mode == mode
 
 
+def test_containerd_config_has_root_set(host):
+    config = host.file("/etc/containerd/config.toml")
+    assert config.contains('^root = "/var/lib/containerd"')
+    assert config.contains('^state = "/run/containerd"')
+
+
+def test_containerd_data_root_exists(host):
+    directory = host.file("/var/lib/containerd")
+    assert directory.exists
+    assert directory.is_directory
+
+
 def test_docker_cron_job_exists(host):
     cron_file = host.file("/etc/cron.d/docker-disk-clean-up")
     assert cron_file.exists
