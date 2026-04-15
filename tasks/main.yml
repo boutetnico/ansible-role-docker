@@ -22,7 +22,16 @@
     mode: "0755"
   loop:
     - "/etc/docker"
+    - "/etc/containerd"
     - "/etc/systemd/system/docker.service.d"
+
+- name: Create containerd data root
+  ansible.builtin.file:
+    path: "{{ docker_containerd_root }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0711"
 
 - name: Configure Docker daemon options (json)
   ansible.builtin.template:
@@ -53,7 +62,9 @@
     owner: "root"
     group: "root"
     mode: "0644"
-  notify: Restart Docker
+  notify:
+    - Restart containerd
+    - Restart Docker
 
 - name: Configure Docker daemon flags
   ansible.builtin.template:

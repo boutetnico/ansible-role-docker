@@ -4,6 +4,11 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
+- name: Restart containerd
+  ansible.builtin.systemd:
+    name: "containerd"
+    state: "restarted"
+
 - name: Restart Docker
   ansible.builtin.systemd:
     name: "docker"

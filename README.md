@@ -30,6 +30,8 @@ Role Variables
 | docker_users                    | true     | `[root]`             | list    |                                                    |
 | docker_daemon_flags             | true     | `[-H unix://]`       | list    |                                                    |
 | docker_daemon_json              | true     | `{}`                 | dict    |                                                    |
+| docker_containerd_root          | true     | `/var/lib/containerd`| string  | containerd data root directory.                    |
+| docker_containerd_state         | true     | `/run/containerd`    | string  | containerd runtime state directory.                |
 | docker_cron_jobs                | true     |                      | list    | See `defaults/main.yml`.                           |
 
 Dependencies

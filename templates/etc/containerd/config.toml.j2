@@ -1,7 +1,7 @@
 disabled_plugins = ["cri"]
 
-#root = "/var/lib/containerd"
-#state = "/run/containerd"
+root = "{{ docker_containerd_root }}"
+state = "{{ docker_containerd_state }}"
 #subreaper = true
 #oom_score = 0
 
